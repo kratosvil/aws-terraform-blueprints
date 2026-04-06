@@ -12,8 +12,8 @@ This repository contains modular Terraform blueprints for real-world AWS infrast
 
 | Blueprint | Architecture | Status |
 |-----------|-------------|--------|
-| [`01-single-tier`](./01-single-tier/) | VPC + EC2 + Apache | Complete |
-| [`02-two-tier`](./02-two-tier/) | EC2 + RDS (public/private segmentation) | In Progress |
+| `01-single-tier` | VPC + EC2 + Apache | In Progress |
+| `02-two-tier` | EC2 + RDS (public/private segmentation) | Planned |
 | `03-docker-cloudwatch` | EC2 + Docker + CloudWatch Logs + IAM | Planned |
 
 ---
@@ -24,7 +24,6 @@ This repository contains modular Terraform blueprints for real-world AWS infrast
 - **IaC:** Terraform >= 1.0 / AWS Provider ~> 5.0
 - **Compute:** EC2 (Amazon Linux 2)
 - **Networking:** VPC, Subnets, IGW, Route Tables, Security Groups
-- **Database:** RDS MySQL 8.0
 - **Automation:** user_data bootstrap scripts
 
 ---
