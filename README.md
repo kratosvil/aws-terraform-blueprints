@@ -1,77 +1,106 @@
-# Lab 1 — Single Tier Architecture
+# aws-terraform-blueprints
 
-Despliegue de una instancia EC2 en una VPC pública con servidor Apache via Terraform.
+Production-style AWS infrastructure built with Terraform, covering progressively complex architectures from single-tier deployments to containerized workloads with observability.
 
-## Arquitectura
+Built as part of [aws-infra-forge](https://github.com/kratosvil) — a hands-on infrastructure engineering practice by **Samir Villa**.
+
+---
+
+## Overview
+
+This repository contains modular Terraform blueprints for real-world AWS infrastructure patterns. Each blueprint is self-contained, follows IaC best practices, and is designed to be deployed, validated, and torn down safely.
+
+| Blueprint | Architecture | Status |
+|-----------|-------------|--------|
+| `01-single-tier` | VPC + EC2 + Apache | In Progress |
+| `02-two-tier` | EC2 + RDS (public/private segmentation) | Planned |
+| `03-docker-cloudwatch` | EC2 + Docker + CloudWatch Logs + IAM | Planned |
+
+---
+
+## Stack
+
+- **Cloud:** AWS (Free Tier)
+- **IaC:** Terraform >= 1.0 / AWS Provider ~> 5.0
+- **Compute:** EC2 (Amazon Linux 2)
+- **Networking:** VPC, Subnets, IGW, Route Tables, Security Groups
+- **Automation:** user_data bootstrap scripts
+
+---
+
+## Blueprint 01 — Single Tier
+
+Public EC2 web server in a dedicated VPC with full network configuration automated via Terraform.
+
+### Architecture
 
 ```
 Internet
     |
 Internet Gateway
     |
+VPC (10.0.0.0/16)
+    |
 Public Subnet (10.0.1.0/24)
     |
-EC2 (Apache HTTP)
+Security Group (HTTP :80, SSH :22)
+    |
+EC2 — Apache HTTP Server
 ```
 
-## Recursos creados
+### Resources
 
-- VPC con DNS habilitado
-- Internet Gateway
-- Subnet pública
-- Route Table con ruta a Internet
-- Security Group (puertos 80 y 22)
-- EC2 instance con Apache instalado via user_data
+| Resource | Name |
+|----------|------|
+| `aws_vpc` | Custom VPC with DNS support |
+| `aws_subnet` | Public subnet with auto-assign public IP |
+| `aws_internet_gateway` | IGW attached to VPC |
+| `aws_route_table` | Public route table (0.0.0.0/0 -> IGW) |
+| `aws_security_group` | HTTP + SSH inbound |
+| `aws_instance` | EC2 with Apache bootstrapped via user_data |
 
-## Uso
+### Variables
 
-### 1. Configurar credenciales AWS
+| Variable | Default | Description |
+|----------|---------|-------------|
+| `aws_region` | `us-east-1` | Deployment region |
+| `project_name` | `lab1` | Resource name prefix |
+| `vpc_cidr` | `10.0.0.0/16` | VPC CIDR block |
+| `public_subnet_cidr` | `10.0.1.0/24` | Public subnet CIDR |
+| `instance_type` | `t2.micro` | EC2 instance type |
+| `ami_id` | `ami-0c02fb55956c7d316` | Amazon Linux 2 (us-east-1) |
+| `key_name` | `""` | EC2 key pair (optional) |
 
-```bash
-aws configure
-```
+### Outputs
 
-### 2. Inicializar Terraform
+| Output | Description |
+|--------|-------------|
+| `instance_id` | EC2 instance ID |
+| `instance_public_ip` | Public IP |
+| `instance_public_dns` | Public DNS |
+| `web_url` | HTTP endpoint |
+| `vpc_id` | VPC ID |
+
+### Usage
 
 ```bash
 terraform init
-```
-
-### 3. Revisar el plan
-
-```bash
 terraform plan
-```
-
-### 4. Aplicar
-
-```bash
 terraform apply
 ```
 
-### 5. Acceder al servidor
-
-Una vez desplegado, el output `web_url` muestra la URL del servidor.
-
-### 6. Destruir recursos
+Access the deployed server at the `web_url` output value. To tear down:
 
 ```bash
 terraform destroy
 ```
 
-## Variables
+> AMI default targets `us-east-1`. Update `ami_id` variable for other regions.
+> Restrict SSH `cidr_blocks` before deploying in shared or production environments.
 
-| Variable             | Default                | Descripción                        |
-|----------------------|------------------------|------------------------------------|
-| `aws_region`         | `us-east-1`            | Región AWS                         |
-| `project_name`       | `lab1`                 | Prefijo de nombres de recursos     |
-| `vpc_cidr`           | `10.0.0.0/16`          | CIDR de la VPC                     |
-| `public_subnet_cidr` | `10.0.1.0/24`          | CIDR de la subnet pública          |
-| `instance_type`      | `t2.micro`             | Tipo de instancia EC2              |
-| `ami_id`             | `ami-0c02fb55956c7d316`| AMI Amazon Linux 2 (us-east-1)     |
-| `key_name`           | `""`                   | Key pair para acceso SSH (opcional)|
+---
 
-## Notas
+## Author
 
-- El AMI por defecto es Amazon Linux 2 para `us-east-1`. Cambiar si usas otra región.
-- El SSH está abierto a `0.0.0.0/0` — restringir en producción.
+**Samir Villa** — DevOps / MLOps Infrastructure Engineer
+[github.com/kratosvil](https://github.com/kratosvil)
