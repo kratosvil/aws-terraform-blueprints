@@ -1,0 +1,43 @@
+# Terraform state
+*.tfstate
+*.tfstate.*
+*.tfstate.backup
+
+# Terraform directories
+.terraform/
+.terraform.lock.hcl
+
+# Terraform variable files with secrets
+*.tfvars
+*.tfvars.json
+!example.tfvars
+
+# Terraform crash logs
+crash.log
+crash.*.log
+
+# Terraform plan output
+*.tfplan
+*.plan
+
+# AWS credentials
+.aws/
+*.pem
+*.key
+
+# Environment files
+.env
+.env.*
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Editor
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Personal context / progress tracking
+CONTEXT.md
